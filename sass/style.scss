@@ -30,12 +30,13 @@
 .modal {
 	display: none;
 	background: #fff;
+	max-height: 80%;
 	width: 400px;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate3d(-50%, -50%, 0);
-
+	overflow: auto;
 	&.show {
 		display: block;
 	}

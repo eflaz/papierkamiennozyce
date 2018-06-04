@@ -152,6 +152,8 @@ newgame.addEventListener("click", function() {
   params.graSkonczona = false;
   params.punktyGracza = 0;
   params.punktyKomputera = 0;
+  params.rozegraneRundy = 0;
+  params.progress = [];
   wyswietlPunkty();
   wyswietlGuziki();
 });
