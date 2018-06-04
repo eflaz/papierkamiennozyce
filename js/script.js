@@ -5,16 +5,25 @@ var nozyce = document.getElementById("box3");
 var output = document.getElementById("output");
 var result = document.getElementById("result");
 var newgame = document.getElementById("newgame");
-var punktyGracza = 0;
-var punktyKomputera = 0;
-var rundy = 0;
-var graSkonczona = false;
+var params = {progress: [], punktyGracza: 0, punktyKomputera: 0, rundy: 0, graSkonczona: false, rozegraneRundy: 0};
+
+function showModal() {
+    document.querySelector("#modal-overlay").classList.add("show");
+    document.querySelector(".modal").classList.remove("show");
+    document.querySelector("#modal-one").classList.add("show");
+}
+
+var hideModal = function(event) {
+    event.preventDefault();
+    document.querySelector("#modal-overlay").classList.remove("show");
+  };
+
 function wyswietlPunkty() {
   result.innerHTML =
     "Aktualny wynik:<br> Punkty Gracza: " +
-    punktyGracza +
+    params.punktyGracza +
     "<br>Punkty Komputera: " +
-    punktyKomputera +
+    params.punktyKomputera +
     "<br><br>";
 }
 function losuj() {
@@ -22,7 +31,7 @@ function losuj() {
   var indeks = Math.floor(Math.random() * 3);
   return mozliwosci[indeks];
 }
-// var wyswietlWynik = function(wynik, ruchKomputera, ruchGracza) {
+
 function wyswietlWynik(wynik, ruchKomputera, ruchGracza) {
   output.innerHTML =
     wynik +
@@ -43,61 +52,109 @@ function schowajGuziki() {
   kamien.style.visibility = "hidden";
   nozyce.style.visibility = "hidden";
 }
-// var playerMove = function(ruchGracza) {
-function playerMove(ruchGracza) {
-  if (graSkonczona) {
-    wynik.innerHTML += "<br>Gra skończona! ";
-    return;
+
+function addListeners(){
+  var elementList = document.querySelectorAll('.player-move');
+
+  for (var i = 0; i < elementList.length; i++) {
+      elementList[i].addEventListener("click", function() {
+        playerMove(this.getAttribute("data-move"));
+      });
   }
 
+  document.querySelector("#modal-overlay").addEventListener("click", hideModal);
+
+  var closeButtons = document.querySelectorAll(".modal .close");
+
+  for (var i = 0; i < closeButtons.length; i++) {
+    closeButtons[i].addEventListener("click", hideModal);
+  }
+}
+
+function playerMove(ruchGracza) {
+  if (params.graSkonczona) {
+    wynik.innerHTML += "<br>Gra skończona! ";
+  return;
+  }
+
+  var wynikRundy = '';
   var ruchKomputera = losuj();
   if (
     (ruchGracza == "papier" && ruchKomputera == "kamien") ||
     (ruchGracza == "kamien" && ruchKomputera == "nozyce") ||
     (ruchGracza == "nozyce" && ruchKomputera == "papier")
   ) {
-    punktyGracza++;
-    wyswietlWynik("Ty Wygrałeś! ", ruchKomputera, ruchGracza);
+    params.punktyGracza++;
+  wynikRundy = 'Ty Wygrałeś!';
+    wyswietlWynik(wynikRundy, ruchKomputera, ruchGracza);
   } else if (
     (ruchKomputera == "papier" && ruchGracza == "kamien") ||
     (ruchKomputera == "kamien" && ruchGracza == "nozyce") ||
     (ruchKomputera == "nozyce" && ruchGracza == "papier")
   ) {
-    punktyKomputera++;
-    wyswietlWynik("Komputer wygrał! ", ruchKomputera, ruchGracza);
+    params.punktyKomputera++;
+    wynikRundy = 'Komputer wygrał!';
+    wyswietlWynik(wynikRundy, ruchKomputera, ruchGracza);
   } else {
-    wyswietlWynik("REMIS", ruchKomputera, ruchGracza);
+    wynikRundy = 'REMIS!';
+    wyswietlWynik(wynikRundy, ruchKomputera, ruchGracza);
   }
+  params.rozegraneRundy++;
+  var runda = {
+    runda_punktyGracza: params.punktyGracza, 
+    runda_punktyKomputera: params.punktyKomputera, 
+    runda_rozegraneRundy: params.rozegraneRundy,
+    runda_wynikRundy: wynikRundy
+  };
+  params.progress.push(runda);
+  console.log(runda);
   sprawdzCzyKoniec();
 }
-papier.addEventListener("click", function() {
-  playerMove("papier");
-});
-kamien.addEventListener("click", function() {
-  playerMove("kamien");
-});
-nozyce.addEventListener("click", function() {
-  playerMove("nozyce");
-});
+
+function generujTabele(){
+  var content = "<table border = 1><tr><td>Numer rundy</td><td>Wynik Rundy</td><td>Punktacja po rundzie</td></tr>";
+    for(var i = 0; i < params.progress.length; i++){
+      content += "<tr><td>"+ params.progress[i].runda_rozegraneRundy + "</td><td>" + params.progress[i].runda_wynikRundy + "</td><td>" + params.progress[i].runda_punktyGracza +" : "+ params.progress[i].runda_punktyKomputera + "<br></td></tr>";
+    }
+    return content;
+}
+
 function sprawdzCzyKoniec() {
-  if (punktyGracza == rundy) {
-    wynik.innerHTML = "Wygrałeś całą grę!";
-    graSkonczona = true;
+  if (params.punktyGracza == params.rundy) {
+    // wynik.innerHTML = "Wygrałeś całą grę!";
+    document.getElementById("header-one").innerHTML = "Koniec gry";
+    document.getElementById("content-one").innerHTML = "<p>Wygrałeś całą grę!</p>";
+    
+    document.getElementById("content-two").innerHTML = generujTabele(); 
+    showModal();
+    params.graSkonczona = true;
     schowajGuziki();
-  } else if (punktyKomputera == rundy) {
-    wynik.innerHTML = "Komputer wygrał całą grę!";
-    graSkonczona = true;
+  } else if (params.punktyKomputera == params.rundy) {
+    // wynik.innerHTML = "Komputer wygrał całą grę!";
+    document.getElementById("header-one").innerHTML = "Koniec gry";
+    document.getElementById("content-one").innerHTML = "<p>Komputer wygrał całą grę!</p>";
+    document.getElementById("content-two").innerHTML = generujTabele();
+    showModal();
+    params.graSkonczona = true;
     schowajGuziki();
   }
 }
+
 wyswietlPunkty();
+addListeners();
+
+
+
 newgame.addEventListener("click", function() {
-  rundy = window.prompt("Podaj liczbę rund");
+  params.rundy = window.prompt("Podaj liczbę rund");
   document.getElementById("wynik").innerHTML =
-    "Do zwycięstwa potrzeba " + rundy + " punktów";
-  graSkonczona = false;
-  punktyGracza = 0;
-  punktyKomputera = 0;
+    "Do zwycięstwa potrzeba " + params.rundy + " punktów";
+  params.graSkonczona = false;
+  params.punktyGracza = 0;
+  params.punktyKomputera = 0;
   wyswietlPunkty();
   wyswietlGuziki();
 });
+
+
+

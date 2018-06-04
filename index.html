@@ -1,41 +1,32 @@
 <!DOCTYPE html>
 <html lang="en" >
-
-<head>
-  <meta charset="UTF-8">
-  <title>PKNv2</title>
-  
-  
-  
-      <link rel="stylesheet" href="css/style.css">
-
-  
-</head>
-
-<body>
-
+  <head>
+    <meta charset="UTF-8">
+    <title>PKNv2</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
   <body onload="schowajGuziki()">
-  <div id="game" class="container">
-  <button class="box" id="box1">Papier</button>
-  <button class="box" id="box2">Kamień</button>
-  <button class="box" id="box3">Nożyce</button>
-  <div id="output" class="container">
+    <div id="game" class="container">
+      <button class="box player-move" id="box1" data-move="papier">Papier</button>
+      <button class="box player-move" id="box2" data-move="kamien">Kamień</button>
+      <button class="box player-move" id="box3" data-move="nozyce">Nożyce</button>
+      <div id="output" class="container">
+      </div>
+      <div id="result">
+      </div>
+    </div>
+    <div id="new-game" class="container">
+      <button class="box" id="newgame">Nowa Gra</button>
+      <div id="wynik"></div>
+    </div>
+    <div class="overlay" id="modal-overlay">
+  <div class="modal" id="modal-one">
+    <a href="#" class="close">x</a>
+    <header id="header-one"></header>
+    <div class="content" id="content-one">
+    </div>
+    <div class="content" id="content-two">
   </div>
-  <div id="result"></div>
-</div>
-<div id="new-game" class="container">
-  <button class="box" id="newgame">Nowa Gra</button>
-  <div id="wynik"></div>
-</div>
-</body>
-  
-  
-
     <script  src="js/script.js"></script>
-
-
-
-
-</body>
-
+  </body>
 </html>
